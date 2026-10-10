@@ -74,10 +74,12 @@ Everything else is in one place, kept current:
 
 ### **[learn.eagle3dstreaming.com](https://learn.eagle3dstreaming.com/)**
 
-- [Web SDK reference](https://learn.eagle3dstreaming.com/wiki/javascript-sdk-guide.html) — every call and every callback, in the order they happen
-- [Set up the Web SDK](https://learn.eagle3dstreaming.com/wiki/embed-stream-using-e3ds-sdk.html) — moving from this sample into your own application
-- [Streaming API key and tokens](https://learn.eagle3dstreaming.com/wiki/streaming-api-key-and-tokens.html) — **read this before you go live.** A key shipped to the browser can be read by anyone who visits the page.
-- [iframe or Web SDK](https://learn.eagle3dstreaming.com/wiki/iframe-or-web-sdk.html) — the other way to embed, and when it is the better one
+- [Web SDK demo manual](https://learn.eagle3dstreaming.com/wiki/web-sdk-demo-manual) — this repository, page by page: what each part does and how to run it
+- [Web SDK reference](https://learn.eagle3dstreaming.com/wiki/javascript-sdk-guide) — every call and every callback, in the order they happen
+- [Set up the Web SDK](https://learn.eagle3dstreaming.com/wiki/embed-stream-using-e3ds-sdk) — moving from this sample into your own application
+- [Streaming API key and tokens](https://learn.eagle3dstreaming.com/wiki/streaming-api-key-and-tokens) — **read this before you go live.** A key shipped to the browser can be read by anyone who visits the page.
+- [Keeping your API key off the browser](https://learn.eagle3dstreaming.com/wiki/sdk-secure-the-key) — how to serve the token from your own server instead
+- [iframe or Web SDK](https://learn.eagle3dstreaming.com/wiki/iframe-or-web-sdk) — the other way to embed, and when it is the better one
 
 ---
 
