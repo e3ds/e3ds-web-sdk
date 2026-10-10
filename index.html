@@ -1,0 +1,76 @@
+<!doctype html>
+<!--
+  Eagle 3D Streaming — SDK demo
+  =============================
+
+  Streams a cloud-rendered Unreal Engine application directly into this page,
+  with no iframe, so you have full programmatic control over the session.
+
+  WHERE TO START:
+    1. scripts/sdk-config.js          - your API key and which app to run
+    2. scripts/sdk-token.js   - getting permission to start a session
+    3. scripts/sdk-callbacks.js- reacting to what the stream does
+    4. scripts/demo-ui-controls.js   - this demo's buttons (an example, not a library)
+
+  Full documentation is in README.md next to this file.
+
+  NOTE: this page must be served over http:// or https://, not opened directly
+  from your file system. See the README's Quick start.
+-->
+<html lang="en" style="width:100%;height:100%">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+
+    <title>E3DS Web SDK demo (Eagle 3D Streaming)</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Michroma&family=Montserrat:wght@600&display=swap"
+          rel="stylesheet">
+
+    <link rel="shortcut icon"
+          href="https://d35e1ftufisrhj.cloudfront.net/NS/assets/images/43ef81525e6853dc.ico"
+          type="image/x-icon">
+    <link rel="icon" type="image/png" sizes="96x96"
+          href="https://d35e1ftufisrhj.cloudfront.net/NS/assets/images/favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="32x32"
+          href="https://d35e1ftufisrhj.cloudfront.net/NS/assets/images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16"
+          href="https://d35e1ftufisrhj.cloudfront.net/NS/assets/images/favicon-16x16.png">
+
+    <link rel="stylesheet" href="./css/style.css">
+
+    <!--
+      Load order matters, and `defer` keeps them in this order while letting the
+      page finish parsing first:
+
+        e3dsCore.min_ns.js  the SDK itself - defines e3ds_controller
+        sdk-config.js           your settings, read by everything below
+        sdk-token.js    gets a token and starts the stream
+        sdk-callbacks.js reacts to what the stream does
+        demo-ui-controls.js    builds this demo's buttons
+
+      The SDK must come first: every other file refers to e3ds_controller.
+    -->
+    <script defer src="./scripts/dist/e3dsCore.min_ns.js"></script>
+    <script defer src="./scripts/sdk-config.js"></script>
+    <!-- Loaded after sdk-config.js so it can see the placeholders, and before
+         sdk-token.js so saved values are already applied. -->
+    <script defer src="./scripts/demo-ui-connection-setup.js"></script>
+    <script defer src="./scripts/demo-ui-tools.js"></script>
+    <script defer src="./scripts/sdk-callbacks.js"></script>
+    <script defer src="./scripts/demo-ui-controls.js"></script>
+    <script defer src="./scripts/sdk-token.js"></script>
+</head>
+
+<body>
+    <!--
+      The player renders itself into this element, and builds its own controls
+      inside it. Leave the id as it is - the SDK looks for it by name.
+    -->
+    <div id="playerUI"></div>
+</body>
+
+</html>

@@ -1,0 +1,379 @@
+/* ==========================================================================
+   Eagle 3D Streaming — SDK demo styles
+   ==========================================================================
+
+   Only the demo's own control panel is styled here. The streaming player
+   builds and styles its own interface.
+   ========================================================================== */
+
+html,
+body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    font-family: Montserrat, sans-serif;
+
+    /* Keeps the page filling the screen on mobile browsers, whose address bar
+       appears and disappears as you scroll. */
+    min-height: -webkit-fill-available;
+}
+
+/* --- The player's container ----------------------------------------------- */
+
+/* The SDK renders into #playerUI and positions its own interface inside it, but
+   the element's SIZE is the page's business, not the player's - and it had none
+   declared. It happened to look right on a first load and stopped matching the
+   video after a restart, leaving the stream in the top half and empty page in
+   the bottom half.
+
+   position:relative also gives the player's absolutely-positioned controls a
+   containing block to sit in, rather than falling back to the page. */
+#playerUI {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+/* --- The demo's control panel -------------------------------------------- */
+
+#demoButtonPanel {
+    /* FIXED, not absolute. Absolute positions against the nearest positioned
+       ancestor, which used to be the player's own controls - so the panel moved
+       whenever the player's layout did. Fixed pins it to the top left of the
+       window and keeps it there, which is the point of it being independent.
+       Anchored to the RIGHT edge, so it does not sit under the player's own
+       settings and stats controls in the top left corner.
+
+       KNOWN LIMIT: a fixed element that is not inside the element being made
+       fullscreen is not painted while that element is fullscreen. So this panel
+       disappears if the viewer puts the VIDEO into fullscreen, and returns when
+       they leave. That is a property of fullscreen, not a bug here - a demo
+       panel that must survive fullscreen has to live inside the element that
+       goes fullscreen, which is exactly the coupling this change removes. */
+    position: fixed;
+    right: 20px;
+    top: 20px;
+
+    /* Above the player's own interface. The player builds overlays of its own
+       and this must stay reachable over them. */
+    z-index: 100000;
+
+    width: 250px;
+    max-height: 70vh;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+
+    /* Scrolls when there are more buttons than fit, so the last ones stay
+       reachable instead of being clipped off the bottom. */
+    overflow-y: auto;
+    overflow-x: hidden;
+
+    padding: 0 0 16px;
+    border-radius: 12px;
+    background-color: rgba(40, 40, 40, 0.9);
+}
+
+/* [E3DS-DEMO-DRAG] The grab bar.
+ *
+ * A handle rather than dragging the panel's own background, because the panel
+ * SCROLLS - it has overflow-y:auto and more buttons than fit. Dragging the
+ * background would fight the scroll on a trackpad and make it impossible to
+ * reach the last button on a touchscreen. A handle keeps the two gestures
+ * apart: drag here, scroll anywhere else. */
+#demoDragHandle {
+    flex-shrink: 0;
+    align-self: stretch;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+
+    height: 22px;
+    margin-bottom: 10px;
+    border-radius: 12px 12px 0 0;
+    background-color: rgba(255, 255, 255, 0.07);
+
+    cursor: grab;
+    /* Stops the browser turning a drag into a text selection or a page pan. */
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: none;
+
+    /* Sticky so the handle stays visible once the button list is scrolled -
+       otherwise scrolling down takes the only way to move the panel with it. */
+    position: sticky;
+    top: 0;
+    z-index: 1;
+}
+
+#demoDragHandle:hover { background-color: rgba(255, 255, 255, 0.12); }
+#demoDragHandle.dragging { cursor: grabbing; }
+
+/* Three dots, the usual "grab me" affordance. Drawn rather than an image so
+   the panel stays self-contained. */
+#demoDragHandle span {
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.45);
+}
+
+.demo-button {
+    flex-shrink: 0;
+    width: 200px;
+    min-height: 40px;
+
+    border: 0;
+    border-radius: 5px;
+    cursor: pointer;
+
+    background-color: #f0f0f0;
+    color: #111;
+    font-family: inherit;
+    font-size: 14px;
+}
+
+.demo-button:hover {
+    background-color: #fff;
+}
+
+.demo-button:active {
+    transform: translateY(1px);
+}
+
+/* [E3DS-DEMO-CATEGORY] Matches the iframe demo's panel exactly. */
+.demo-category {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+}
+.demo-group-label {
+    flex-shrink: 0;
+    width: 200px;
+    margin: 6px 0 -2px;
+    padding: 0 2px;
+    color: rgba(255, 255, 255, 0.5);
+    font-family: inherit;
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+/* [E3DS-PANEL-COLLAPSE] Collapsed, only the handle bar is left.
+ *
+ * The panel is max-height:70vh, which on a phone covers most of the stream it
+ * exists to control. Tapping the handle collapses it to the bar; tapping again
+ * restores it, and the caret shows which way the next tap will go.
+ *
+ * The children are hidden rather than the panel resized, so the handle stays
+ * exactly where it was and the panel does not jump out from under the finger
+ * that just tapped it. */
+#demoButtonPanel.collapsed > *:not(#demoDragHandle) {
+    /* !important, because one child sets display INLINE.
+     *
+     * addDemoSlider gives the volume row
+     * style.cssText = "display:flex;..." to lay the label, track and readout
+     * out in a line. An inline declaration beats a stylesheet rule however
+     * specific the selector, so `display: none` applied to every child except
+     * that one - collapsing the panel left a lone Volume slider floating under
+     * the handle.
+     *
+     * !important on this one declaration is the smaller change. Moving the
+     * row's layout into a class would fix it too, but that inline style also
+     * carries alignment, gap and cursor, and splitting them across two places
+     * is how the next person loses track of which wins. */
+    display: none !important;
+}
+
+#demoButtonPanel.collapsed {
+    max-height: none;
+    overflow: visible;
+}
+
+/* Sits to the right of the grip dots. pointer-events:none so it can never
+   swallow the tap meant for the handle underneath it. */
+#demoPanelCaret {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 11px;
+    line-height: 1;
+    color: rgba(255, 255, 255, 0.55);
+    pointer-events: none;
+}
+
+#demoDragHandle { position: relative; }
+/* [E3DS-MESSAGE-WRAP] Let the player's status text wrap on a phone.
+ *
+ * Reported from an iPhone: "waiting for <streamer>" ran off both edges of the
+ * screen and only the middle of the id was readable. The message system is
+ * fine - every other status line fits. This one carries a streamer id with no
+ * spaces in it, and a single unbreakable token cannot wrap, so it overflows
+ * however narrow the screen is.
+ *
+ * overflow-wrap:anywhere is the part that matters: it permits a break INSIDE a
+ * word, which normal wrapping never does. The rest keeps the text inside the
+ * viewport and centred while it wraps.
+ *
+ * Scoped under #playerUI and applied to descendants because the text sits in a
+ * child element. The specificity is deliberate: the player injects its own
+ * rules from a <style> element created at runtime, which lands after this
+ * stylesheet, so a bare class selector here would lose on source order. */
+#playerUI .textDisplayState,
+#playerUI .textDisplayState * {
+    max-width: 92vw;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    text-align: center;
+    box-sizing: border-box;
+}
+
+/* On a narrow screen the overlay's own size is the other half of the problem -
+   wrapping a very large font still fills the screen. Bounded, not fixed, so it
+   keeps scaling on larger phones and is unchanged on desktop. */
+@media (max-width: 700px) {
+    #playerUI .textDisplayState,
+    #playerUI .textDisplayState * {
+        font-size: clamp(13px, 4vw, 22px);
+        line-height: 1.35;
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+}
+
+/* [E3DS-DRAG-ANYWHERE] Group headings are drag surfaces on touch too.
+ *
+ * The panel scrolls (max-height:70vh, overflow-y:auto), and on touch a vertical
+ * drag IS a scroll - the browser keeps that gesture unless touch-action says
+ * otherwise. The panel itself must stay scrollable, or a phone cannot reach the
+ * controls below the fold.
+ *
+ * Headings are real elements, so they can opt out one at a time: dragging from
+ * a heading works on touch, and everywhere else the panel still scrolls. The
+ * gaps and padding belong to the panel itself and cannot be separated from it,
+ * so those drag with a mouse only - the right trade, since a mouse has no
+ * scroll gesture to lose. */
+#demoButtonPanel .demo-group-label {
+    touch-action: none;
+}
+
+
+/* [E3DS-DEMO-PHONE] On a phone the panel starts closed and opens as a sheet along the bottom, from the
+   "Web SDK controls" button (scripts/demo-ui-controls.js) - the same layout as the iframe demo. Turned on by the
+   e3ds-phone class (narrow window or touch screen), not by a width query, so a phone held sideways gets it too.
+   !important because a drag may have left inline left/top on the panel. */
+body.e3ds-phone #demoButtonPanel,
+body.e3ds-phone #appResponsePanel {
+    display: none !important;
+    left: 8px !important; right: 8px !important; top: auto !important; bottom: 8px !important;
+    width: auto !important; max-width: 640px !important; margin: 0 auto !important;
+    max-height: 55vh !important; resize: none !important;
+}
+body.e3ds-phone #demoButtonPanel.e3ds-phone-open,
+body.e3ds-phone #appResponsePanel.e3ds-phone-open { display: flex !important; }
+body.e3ds-phone #appResponsePanel.e3ds-phone-open { height: 35vh !important; min-height: 120px !important; max-height: 85vh !important; }
+/* A sheet's top bar resizes it on a phone - tall enough to grab with a thumb. */
+body.e3ds-phone #demoButtonPanel #demoDragHandle,
+body.e3ds-phone #appResponsePanel #demoDragHandle { cursor: ns-resize; touch-action: none; min-height: 28px; }
+#e3dsPhoneBar {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    z-index: 100001;
+    display: flex;
+    gap: 6px;
+}
+#e3dsPhoneBar button {
+    min-height: 36px;
+    padding: 0 14px;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: 18px;
+    background: rgba(20, 20, 20, 0.85);
+    color: #eee;
+    font: 14px Montserrat, sans-serif;
+    cursor: pointer;
+}
+#e3dsPhoneBar button.on { background: #eee; color: #111; }
+
+/* ── [E3DS-LOG] The Log window: every SDK call this page makes (→) and what comes back (←). Same look as the iframe
+   demo's. Left, clear of the player's own buttons in the top-left corner. ── */
+#appResponsePanel {
+    position: fixed;
+    left: 90px;
+    top: 20px;
+    z-index: 100000;
+    width: 340px;
+    height: 45vh;
+    min-width: 220px;
+    min-height: 120px;
+    max-width: 90vw;
+    max-height: 85vh;
+    resize: both;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    padding: 0 0 10px;
+    border-radius: 12px;
+    background-color: rgba(40, 40, 40, 0.9);
+    color: #eee;
+}
+#appResponsePanel #demoPanelCaret { display: none; }
+.app-response-head { display: flex; align-items: center; justify-content: space-between; padding: 0 12px; }
+.app-response-clear {
+    padding: 2px 10px; border: 0; border-radius: 4px; cursor: pointer;
+    background-color: rgba(255, 255, 255, 0.12); color: #eee; font: 11px inherit;
+}
+.app-response-clear:hover { background-color: rgba(255, 255, 255, 0.22); }
+#appResponseList { flex: 1; overflow-y: auto; padding: 0 12px; }
+.app-response-empty { padding: 8px 0; color: rgba(255, 255, 255, 0.4); font-size: 12px; line-height: 1.5; }
+.app-response-entry { padding: 6px 0; border-top: 1px solid rgba(255, 255, 255, 0.08); }
+.app-response-entry:first-child { border-top: 0; }
+.app-response-time { font-size: 11px; color: rgba(255, 255, 255, 0.55); }
+.app-response-entry[data-kind="out"] .app-response-time { color: #8fc4e0; }
+.app-response-entry[data-kind="in"]  .app-response-time { color: #9ed6ab; }
+.app-response-entry[data-kind="err"] .app-response-time { color: #e89898; }
+.app-response-body {
+    margin: 2px 0 0; color: #ddd;
+    font: 12px/1.4 ui-monospace, SFMono-Regular, Menlo, monospace;
+    white-space: pre-wrap; word-break: break-word;
+}
+
+/* ── [E3DS-DEMO-TEXT-INPUT] A box and its button, the same 200px width as a button. ── */
+.demo-text-row { flex-shrink: 0; display: flex; gap: 6px; width: 200px; }
+.demo-text-input {
+    flex: 1; min-width: 0; min-height: 34px; padding: 0 8px;
+    border: 0; border-radius: 5px; background-color: #f0f0f0; color: #111;
+    font: 13px ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+.demo-text-send {
+    flex-shrink: 0; min-height: 34px; padding: 0 10px;
+    border: 0; border-radius: 5px; cursor: pointer;
+    background-color: #f0f0f0; color: #111; font-family: inherit; font-size: 13px;
+}
+.demo-text-send:hover { background-color: #fff; }
+.demo-text-send:active { transform: translateY(1px); }
+.demo-text-multiline { flex-direction: column; }
+.demo-text-multiline .demo-text-input {
+    min-height: 58px; padding: 6px 8px; font-size: 11.5px; line-height: 1.35;
+    resize: vertical; overflow: auto; white-space: pre-wrap; word-break: break-all;
+}
+.demo-text-multiline .demo-text-send { min-height: 30px; }
+
+/* ── [E3DS-DEMO-SELECT] A dropdown with its label above. ── */
+.demo-select-row { flex-shrink: 0; display: flex; flex-direction: column; gap: 4px; width: 200px; }
+.demo-select-label { font-size: 11px; color: rgba(255, 255, 255, 0.6); }
+.demo-select { min-height: 36px; padding: 0 8px; border: 0; border-radius: 5px; background-color: #f0f0f0; color: #111; font: 13px inherit; }
+
+/* Visible but not usable yet (an empty box's button). */
+.demo-button:disabled, .demo-select:disabled, .demo-text-input:disabled, .demo-text-send:disabled { opacity: 0.45; cursor: not-allowed; }
+
+/* [E3DS-APP-CONTROLS] "No app controls available for this app." */
+.demo-empty-note { width: 200px; padding: 6px 2px; color: rgba(255, 255, 255, 0.55); font-size: 12px; line-height: 1.4; }

@@ -1,0 +1,6 @@
+
+
+# [E3DS-SDK-INTERNAL] Internal notes live beside the SDK in the private repo
+# and are copied across by accident sooner or later. This is the backstop:
+# even if one lands here, it cannot be committed.
+CLAUDE-*.md
