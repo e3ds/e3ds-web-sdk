@@ -197,7 +197,7 @@ function sdkCall(name, ...args) {
 
 /* ── Your app ([E3DS-APP-CONTROLS]) ─────────────────────────────────────────────────────────────────────────────
  * Controls that only one app understands, per app name. An entry is a button - [label, message] - or a dropdown -
- * { label, placeholder, options: [[label, message], ...] }; the message is what sendToUnreal sends.
+ * { label, placeholder, options: [[label, message], ...] }; the message is what sendMessageToStreamingBuild sends.
  * Any app not listed gets "No app controls available for this app." The same table as the iframe demo. */
 const E3DS_APP_CONTROLS = {
     /* The car configurator: a colour name, as a plain string. */
@@ -217,7 +217,7 @@ const E3DS_APP_CONTROLS = {
 let e3dsAppMessageBox = null;
 function e3dsSendAppMessage(message) {
     if (e3dsAppMessageBox) { e3dsAppMessageBox.value = JSON.stringify(message); e3dsAppMessageBox.e3dsRefresh(); }
-    sdkCall("sendToUnreal", message);
+    sdkCall("sendMessageToStreamingBuild", message);
 }
 
 /* Builds "Your app" for the app that is streaming: its controls (or the "none" note), then the message box. */
@@ -256,6 +256,6 @@ function e3dsBuildAppControls(appName) {
         let payload = value;
         try { payload = JSON.parse(value); }
         catch (e) { console.log("[E3DS] message box: not JSON (" + e.message + ") - sent as plain text"); }
-        sdkCall("sendToUnreal", payload);
+        sdkCall("sendMessageToStreamingBuild", payload);
     }, "Your app", "channel");
 }
