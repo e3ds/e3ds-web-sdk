@@ -1,0 +1,15 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>E3DS Web SDK from npm</title>
+  <style>html,body{margin:0;height:100%;font-family:sans-serif} #status{position:fixed;top:8px;left:8px;z-index:10;background:#fff;padding:6px 10px}</style>
+</head>
+<body>
+  <div id="status">loading the SDK...</div>
+  <!-- The player renders into #playerUI. loadE3dsSdk() creates it if it is missing. -->
+  <div id="playerUI" style="position:fixed;inset:0"></div>
+  <script type="module" src="./main.js"></script>
+</body>
+</html>

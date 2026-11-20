@@ -53,6 +53,18 @@ stream starts by itself. Press **F12** to watch it in the console.
 
 ---
 
+## Using a bundler? Install it from npm
+
+```bash
+npm install @eagle3dstreaming/web-sdk
+```
+
+The same SDK as `scripts/dist/e3dsCore.min_ns.js`, with a loader, a
+session-token helper and TypeScript types; `npm update` brings in new
+releases. See [`npm/README.md`](npm/README.md).
+
+---
+
 ## What is in here
 
 | | |

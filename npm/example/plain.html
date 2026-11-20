@@ -1,0 +1,15 @@
+<!doctype html>
+<!-- No bundler: the SDK straight from node_modules with a classic <script>, as the demo page does. -->
+<html lang="en">
+<head><meta charset="utf-8"><title>E3DS Web SDK - plain script</title></head>
+<body>
+  <div id="playerUI"></div>
+  <script src="./node_modules/@eagle3dstreaming/web-sdk/dist/e3dsCore.min_ns.js"></script>
+  <script>
+    window.__e3dsTest = {
+      ok: typeof e3ds_controller === "object" && typeof e3ds_controller.main === "function",
+      methods: Object.keys(e3ds_controller).filter(function (k) { return typeof e3ds_controller[k] === "function"; }).sort()
+    };
+  </script>
+</body>
+</html>

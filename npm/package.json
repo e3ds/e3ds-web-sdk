@@ -1,0 +1,57 @@
+{
+  "name": "@eagle3dstreaming/web-sdk",
+  "version": "1.0.0",
+  "description": "Eagle 3D Streaming Web SDK - stream a cloud-rendered Unreal Engine application straight into your web page and control it from JavaScript.",
+  "keywords": [
+    "eagle3dstreaming",
+    "e3ds",
+    "pixel-streaming",
+    "unreal-engine",
+    "webrtc",
+    "cloud-streaming",
+    "sdk"
+  ],
+  "homepage": "https://learn.eagle3dstreaming.com/wiki/javascript-sdk-guide",
+  "bugs": {
+    "email": "support@eagle3dstreaming.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/e3ds/e3ds-web-sdk.git",
+    "directory": "npm"
+  },
+  "license": "UNLICENSED",
+  "author": "Eagle 3D Streaming <support@eagle3dstreaming.com>",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "unpkg": "./dist/e3dsCore.min_ns.js",
+  "jsdelivr": "./dist/e3dsCore.min_ns.js",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs"
+    },
+    "./sdk": "./dist/e3dsCore.min_ns.js",
+    "./dist/e3dsCore.min_ns.js": "./dist/e3dsCore.min_ns.js",
+    "./package.json": "./package.json"
+  },
+  "sideEffects": false,
+  "files": [
+    "dist/index.mjs",
+    "dist/index.cjs",
+    "dist/index.d.ts",
+    "dist/e3dsCore.min_ns.js",
+    "dist/sdk-source.mjs",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "prepack": "node scripts/build.mjs"
+  }
+}
